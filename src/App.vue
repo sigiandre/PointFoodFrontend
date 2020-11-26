@@ -1,32 +1,59 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <section id="app" class="hero is-light is-fullheight">
+    <notifications group="global" position="top right" style="top:20px;right:20px;">
+      <template slot="body" scope="props">
+        <div :class="'notification ' + props.item.type">
+          <button type="button" @click="props.close" class="delete"></button>
+          <div v-html="props.item.text"></div>
+        </div>
+      </template>
+    </notifications>
+   
+   <template>      
+     <Header v-if="isLoggedIn" />
+      <div class="hero-body">
+        <div class="container">
+          <router-view v-if="isLoggedIn" />
+          <LoginAndRegister v-else />
+        </div>
+      </div>
+      <Footer />
+    </template>
+    
+  </section>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
 
-#nav {
-  padding: 30px;
-}
+<script>
+import Header from "./shared/Header.vue";
+import Footer from "./shared/Footer.vue";
+import LoginAndRegister from "./shared/LoginAndRegister.vue";
+export default {
+  name: "app",
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+  mounted() {
+    this.__isLoggedIn();
+  },
 
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+  components: {
+    Header,
+    Footer,
+    LoginAndRegister
+  },
+
+  data() {
+    return {
+      isLoggedIn: false
+    };
+  },
+
+  methods: {     
+      __isLoggedIn() {
+        if (localStorage.getItem("access_token") != null) {
+          this.$user.initialize();
+          this.isLoggedIn = true;
+        }      
+    }
+  }
+};
+</script>
